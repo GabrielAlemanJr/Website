@@ -1,5 +1,5 @@
 tictactoe gamefiles
 tictactoegame.py - python only version of game
-userlogin.html - run a user log in for the game
-tictactoelambdafuciton.py - lambda fuction executed to check if userlog in and password exist or valid. Then runs the game
+userlogin.html - run a user login for the game
+tictactoelambdafuciton.py - lambda fuction executed to check if user login and password exist or valid. Then runs the game and handle every action
 htmltext.py - html pages used by tictactoelambdafunction.py for different actions
