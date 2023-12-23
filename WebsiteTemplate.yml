@@ -88,7 +88,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - "logs:CreateLogGroup"
-                Resource: !Join ['',["arn:aws:logs:",!Ref "AWS::Region",":",!Ref "AWS::AccountId"]]
+                Resource: !Join ['',["arn:aws:logs:",!Ref "AWS::Region",":",!Ref "AWS::AccountId",":*"]]
               - Effect: Allow
                 Action:
                   - "logs:CreateLogStream"
@@ -181,12 +181,12 @@ Resources:
               - Effect: Allow
                 Action:
                   - "logs:CreateLogGroup"
-                Resource: !Join ['',["arn:aws:logs:",!Ref "AWS::Region",":",!Ref "AWS::AccountId"]]
+                Resource: !Join ['',["arn:aws:logs:",!Ref "AWS::Region",":",!Ref "AWS::AccountId",":*"]]
               - Effect: Allow
                 Action:
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
-                Resource: !Join ['',["arn:aws:logs:",!Ref "AWS::Region",":",!Ref "AWS::AccountId",":log-group:/aws/lambda/",!Ref LambdaName,":*"]]
+                Resource: !Join ['',["arn:aws:logs:",!Ref "AWS::Region",":",!Ref "AWS::AccountId",":log-group:/aws/lambda/",!Ref CopierLambdaName,":*"]]
 
   MyLambdaFunctionCopyer:
     Type: 'AWS::Lambda::Function'
