@@ -1,12 +1,20 @@
 import random
 import json
 import boto3
+import os
 from htmltext import *
 
 
 def lambda_handler(event, context):
     board = None
     availablemoves = None
+    table = os.environ["databasename"]
+    website = "https://"+str(event.get("headers").get("Host")) + "/" + os.environ["stagename"] + event.get("path")
+    urlbucket = os.environ["urlbucket"]
+    print(event)
+    print(context)
+    print(website)
+    print(urlbucket)
     if len(event.get('queryStringParameters').get('password')) == 0 or len(event.get('queryStringParameters').get('user_id')) == 0:
         text = htmlnoinfo()
         return{
@@ -25,11 +33,11 @@ def lambda_handler(event, context):
         reset = event.get('queryStringParameters').get('reset')
     user_id = event.get('queryStringParameters').get('user_id')
     dynamodb = boto3.resource("dynamodb")                 
-    table = dynamodb.Table("tictactoe_info")  #gets dynamodb table
+    table = dynamodb.Table(table)  #gets dynamodb table
     response = table.get_item(Key={"user_name":user_id}) #gets user information
     if "Item" in response and reset == "false":   #checks if user exist if it does check if password matches and gets information. If no user it creates it in dynamodb
         if password != response["Item"]["password"]:
-            html = htmlfile()
+            html = htmlwrongpassword(website,urlbucket)
             return{
                 'statusCode': 200,
                 'body': html,
@@ -45,7 +53,7 @@ def lambda_handler(event, context):
         table.put_item(Item = {"user_name":user_id,"password":password,"board":board,"availablemoves":availablemoves})
     if userinput == "doesn't exist":
         text = returnboard(board)
-        text = htmlinput(text,user_id,password)
+        text = htmlinput(text,user_id,password,website,urlbucket)
         return  {
                 'statusCode': 200,
                 'body': text,
@@ -65,13 +73,13 @@ def lambda_handler(event, context):
     table.update_item(Key={"user_name":user_id},UpdateExpression="SET availablemoves= :a",ExpressionAttributeValues={':a': availablemoves})
     text = returnboard(board)
     if playing == 1 :
-        text = htmlplayerwin(text,playing,user_id,password)
+        text = htmlplayerwin(text,playing,user_id,password,website,urlbucket)
     elif playing == 2:
-        text = htmlplayerwin(text,playing,user_id,password)
+        text = htmlplayerwin(text,playing,user_id,password,website,urlbucket)
     elif playing == 3:
-        text = htmlplayerwin(text,playing,user_id,password)
+        text = htmlplayerwin(text,playing,user_id,password,website,urlbucket)
     else:
-        text = htmlinput(text,user_id,password)
+        text = htmlinput(text,user_id,password,website,urlbucket)
     return {
             'statusCode': 200,
             'body': text,
@@ -164,5 +172,3 @@ def printboard(board):
 def returnboard(board):
     text = text = "|"+str(board[0][0])+"|"+str(board[0][1])+"|"+str(board[0][2])+"|</br>|"+str(board[1][0])+"|"+str(board[1][1])+"|"+str(board[1][2])+"|</br>|"+str(board[2][0])+"|"+str(board[2][1])+"|"+str(board[2][2])+"|"
     return text
-
-    
